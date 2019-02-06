@@ -8,10 +8,10 @@ pylint = "*"
 
 [packages]
 django = "*"
-django-constance = {extras = ["database"],version = "*"}
 django-environ = "*"
 django-extensions = "*"
 django-model-utils = "*"
+djangorestframework = "*"
 gunicorn = "*"
 lxml = "*"
 requests = "*"
