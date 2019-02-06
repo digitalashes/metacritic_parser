@@ -1,0 +1,21 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+
+[packages]
+django = "*"
+django-constance = {extras = ["database"],version = "*"}
+django-environ = "*"
+django-extensions = "*"
+django-model-utils = "*"
+gunicorn = "*"
+lxml = "*"
+requests = "*"
+sqlformatter = "*"
+
+[requires]
+python_version = "3.7"
