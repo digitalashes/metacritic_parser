@@ -131,6 +131,7 @@ THIRD_PARTY_APPS = (
 
 LOCAL_APPS = (
     'common.apps.CommonConfig',
+    'metacritic.apps.MetaCriticConfig',
     'users.apps.UsersConfig',
 )
 

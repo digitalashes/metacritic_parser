@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class MetacriticConfig(AppConfig):
+class MetaCriticConfig(AppConfig):
     name = 'metacritic'
