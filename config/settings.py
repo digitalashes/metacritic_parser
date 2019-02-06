@@ -125,6 +125,7 @@ DJANGO_APPS = (
 
 THIRD_PARTY_APPS = (
     'django_extensions',
+    'rest_framework',
 )
 
 LOCAL_APPS = (
@@ -390,9 +391,20 @@ if env.bool('DJANGO_DEBUG_SQL_COLOR'):
     }
 
 ##############################################################################
+# django-rest-framework
+# https://www.django-rest-framework.org
+##############################################################################
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 250,
+}
+
+##############################################################################
 # Project settings
 #
 ##############################################################################
+
 DEFAULTS_HEADERS = {
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
     'accept-encoding': 'gzip, deflate, br',
