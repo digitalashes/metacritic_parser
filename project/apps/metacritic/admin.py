@@ -12,10 +12,11 @@ class PlatformAdmin(admin.ModelAdmin):
 
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'score', 'platform')
+    list_display = ('id', 'title', 'score', 'platform', 'created', 'modified')
     list_display_links = ('title',)
     list_filter = ('platform',)
     list_select_related = ('platform',)
+    ordering = ('-score', 'title')
     raw_id_fields = ('platform',)
     readonly_fields = ('created', 'modified')
-    search_fields = ('title', 'score', 'platform')
+    search_fields = ('title', 'score',)

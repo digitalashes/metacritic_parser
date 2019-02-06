@@ -13,7 +13,7 @@ from config.logging import LOGGING
 ROOT_DIR = pathlib.Path(__file__).parent.parent
 APPS_DIR = ROOT_DIR.joinpath('project')
 
-sys.path.append(APPS_DIR.joinpath('apps'))
+sys.path.append(str(APPS_DIR.joinpath('apps')))
 
 ##############################################################################
 # Default values for variables which should be present in .env file
@@ -125,8 +125,6 @@ DJANGO_APPS = (
 
 THIRD_PARTY_APPS = (
     'django_extensions',
-    'constance',
-    'constance.backends.database',
 )
 
 LOCAL_APPS = (
@@ -392,9 +390,18 @@ if env.bool('DJANGO_DEBUG_SQL_COLOR'):
     }
 
 ##############################################################################
-# Constance
-# https://django-constance.readthedocs.io/en/latest/
+# Project settings
+#
 ##############################################################################
-
-CONSTANCE_CONFIG = {
+DEFAULTS_HEADERS = {
+    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+    'accept-encoding': 'gzip, deflate, br',
+    'accept-language': 'en-US,en;q=0.9',
+    'cache-control': 'max-age=0',
+    'upgrade-insecure-requests': '1',
+    'user-agent':
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36',
 }
+DEFAULT_PLATFORM = 'switch'
+DEFAULT_PARSING_URL = 'https://www.metacritic.com/browse/games/release-date/available/{platform}/metascore?view=condensed'
+AVAILABLE_PLATFORMS = ['ps4', 'xboxone', 'switch', 'pc', 'wii-u', '3ds', 'vita', 'ios']
