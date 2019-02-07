@@ -59,7 +59,7 @@ class Command(BaseCommand):
 
     def fetch(self, session: requests.Session, url: str) -> None:
         self.stdout.write(f'Fetching games info from url - {url}')
-        response = session.get(url, headers=settings.HEADERS)
+        response = session.get(url, headers=settings.DEFAULTS_HEADERS)
         if response.status_code != 200:
             self.stderr.write(f'Bad url - {url}\n'
                               f'Status code is {response.status_code}')
@@ -89,7 +89,7 @@ class Command(BaseCommand):
                               'Seems it\'s a last page.\n\n')
             return None
 
-    def save(self):
+    def save(self) -> None:
         self.stdout.write('Saving data...')
         platform, *__ = Platform.objects.get_or_create(name=self.platform)
         for record in self.data:

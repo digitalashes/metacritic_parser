@@ -1,13 +1,33 @@
 from django.conf import settings
+from django.core.management import call_command
+from django.urls import reverse_lazy
+from django.views.generic.edit import FormView
 from rest_framework.filters import OrderingFilter
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.generics import get_object_or_404
 
+from metacritic.forms import UrlForm
 from metacritic.models import Game
 from metacritic.models import Platform
 from metacritic.serializers import GameSerializer
+from django.contrib import messages
+
+
+class ParserViewForm(FormView):
+    template_name = 'parse.html'
+    form_class = UrlForm
+    success_url = reverse_lazy('admin:metacritic_game_changelist')
+
+    def form_valid(self, form):
+        try:
+            call_command('collect_data')
+        except Exception as e:
+            messages.add_message(self.request, messages.ERROR, 'Something went wrong.')
+            return super().form_invalid(form)
+        messages.add_message(self.request, messages.INFO, 'Data has been fetched successfully.')
+        return super().form_valid(form)
 
 
 class GameListApiView(ListAPIView):

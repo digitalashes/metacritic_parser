@@ -48,7 +48,7 @@ env = environ.Env(
     DJANGO_EMAIL_SSL_KEYFILE=(str, ''),
 
     DJANGO_DEFAULT_FILE_STORAGE=(str, 'django.core.files.storage.FileSystemStorage'),
-    DJANGO_STATIC_ROOT=(str, str(APPS_DIR.joinpath('staticfiles'))),
+    DJANGO_STATIC_ROOT=(str, str(APPS_DIR.joinpath('static'))),
     DJANGO_MEDIA_ROOT=(str, str(APPS_DIR.joinpath('media'))),
 
     DJANGO_USE_DEBUG_TOOLBAR=(bool, False),
@@ -141,7 +141,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # https://docs.djangoproject.com/en/2.0/ref/settings/#http
 ##############################################################################
 
-ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS')
+ALLOWED_HOSTS = list(map(lambda x: x.strip(), env.list('DJANGO_ALLOWED_HOSTS')))
 
 DEFAULT_HTTP_PROTOCOL = env.str('DJANGO_DEFAULT_HTTP_PROTOCOL')
 
@@ -274,10 +274,10 @@ FILE_UPLOAD_PERMISSIONS = None
 
 FILE_UPLOAD_TEMP_DIR = None
 
-MEDIA_ROOT = env.str('DJANGO_MEDIA_ROOT')
+MEDIA_ROOT = ROOT_DIR.joinpath(env.str('DJANGO_MEDIA_ROOT'))
 MEDIA_URL = '/media/'
 
-STATIC_ROOT = env.str('DJANGO_STATIC_ROOT')
+STATIC_ROOT = ROOT_DIR.joinpath(env.str('DJANGO_STATIC_ROOT'))
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
