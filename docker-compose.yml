@@ -1,18 +1,36 @@
-version: '3'
+version: '3.7'
 
 services:
 
+  db:
+    image: postgres:latest
+    networks:
+      - database_network
+    ports:
+      - 5432:5432
+    env_file:
+      - ./config/.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   djangoapp:
     build: .
+    entrypoint: |
+      bash -c "python manage.py migrate --no-input &&
+               python manage.py collectstatic --no-input &&
+               gunicorn --bind :8000 config.wsgi:application"
     volumes:
       - .:/opt/services/djangoapp/src
       - static_volume:/opt/services/djangoapp/src/project/staticfiles
       - media_volume:/opt/services/djangoapp/src/project/media
     networks:
       - nginx_network
+      - database_network
+    depends_on:
+      - db
 
   nginx:
-    image: nginx:1.13
+    image: nginx:latest
     ports:
       - 8000:80
     volumes:
@@ -27,7 +45,10 @@ services:
 networks:
   nginx_network:
     driver: bridge
+  database_network:
+    driver: bridge
 
 volumes:
+  postgres_data:
   static_volume:
   media_volume:

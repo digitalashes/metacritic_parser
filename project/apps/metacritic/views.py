@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib import messages
 from django.core.management import call_command
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
@@ -12,18 +13,17 @@ from metacritic.forms import UrlForm
 from metacritic.models import Game
 from metacritic.models import Platform
 from metacritic.serializers import GameSerializer
-from django.contrib import messages
 
 
-class ParserViewForm(FormView):
+class ParserViewForm(FormView):  # pylint: disable=R0901
     template_name = 'parse.html'
     form_class = UrlForm
     success_url = reverse_lazy('admin:metacritic_game_changelist')
 
     def form_valid(self, form):
         try:
-            call_command('collect_data')
-        except Exception as e:
+            call_command('collect_data', url=form.cleaned_data['url'])
+        except Exception:  # pylint: disable=W0703
             messages.add_message(self.request, messages.ERROR, 'Something went wrong.')
             return super().form_invalid(form)
         messages.add_message(self.request, messages.INFO, 'Data has been fetched successfully.')
@@ -35,24 +35,31 @@ class GameListApiView(ListAPIView):
     ordering = ('title', 'score')
     queryset = Game.objects.select_related(
         'platform'
-    ).filter(
-        platform=Platform.objects.get(name=settings.DEFAULT_PLATFORM)
     )
     search_fields = ('title',)
     serializer_class = GameSerializer
+
+    def get_queryset(self):
+        platform = get_object_or_404(Platform.objects, name=settings.PARSER_DEFAULT_PLATFORM)
+        return super().get_queryset().filter(
+            platform=platform
+        )
 
 
 class GameRetrieveApiView(RetrieveAPIView):
     lookup_field = 'title'
     queryset = Game.objects.select_related(
         'platform'
-    ).filter(
-        platform=Platform.objects.get(name=settings.DEFAULT_PLATFORM)
     )
     serializer_class = GameSerializer
 
     def get_object(self):
-        queryset = self.filter_queryset(self.get_queryset())
+        platform = get_object_or_404(Platform.objects, name=settings.PARSER_DEFAULT_PLATFORM)
+        queryset = self.filter_queryset(
+            self.get_queryset().filter(
+                platform=platform
+            )
+        )
 
         # Perform the lookup filtering.
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field

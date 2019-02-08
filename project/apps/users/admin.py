@@ -37,7 +37,8 @@ class UserCreationForm(UserCreationFormBase):
 class UserAdmin(AuthUserAdmin):
     add_form = UserCreationForm
     form = UserChangeForm
-    list_display = ('email', 'first_name', 'last_name', 'is_staff', 'is_active', 'last_login', 'date_joined')
+    list_display = ('email', 'first_name', 'last_name', 'is_staff',
+                    'is_active', 'last_login', 'date_joined')
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
     ordering = ('email',)
     readonly_fields = ('last_login', 'date_joined')

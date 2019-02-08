@@ -21,7 +21,8 @@ def get_object_or_none(klass, *args, **kwargs):
     except AttributeError:
         klass__name = klass.__name__ if isinstance(klass, type) else klass.__class__.__name__
         raise ValueError(
-            f'First argument to get_object_or_404() must be a Model, Manager, or QuerySet, not {klass__name}.'
+            f'First argument to get_object_or_404() must be '
+            f'a Model, Manager, or QuerySet, not {klass__name}.'
         )
     except queryset.model.DoesNotExist:
         return None

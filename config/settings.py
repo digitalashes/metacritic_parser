@@ -1,4 +1,3 @@
-import datetime
 import pathlib
 import secrets
 import sys
@@ -14,6 +13,8 @@ ROOT_DIR = pathlib.Path(__file__).parent.parent
 APPS_DIR = ROOT_DIR.joinpath('project')
 
 sys.path.append(str(APPS_DIR.joinpath('apps')))
+
+# pylint: disable=C0301
 
 ##############################################################################
 # Default values for variables which should be present in .env file
@@ -405,7 +406,7 @@ REST_FRAMEWORK = {
 #
 ##############################################################################
 
-DEFAULTS_HEADERS = {
+PARSER_DEFAULTS_HEADERS = {
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
     'accept-encoding': 'gzip, deflate, br',
     'accept-language': 'en-US,en;q=0.9',
@@ -414,6 +415,6 @@ DEFAULTS_HEADERS = {
     'user-agent':
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36',
 }
-DEFAULT_PLATFORM = 'switch'
-DEFAULT_PARSING_URL = 'https://www.metacritic.com/browse/games/release-date/available/{platform}/metascore?view=condensed'
-AVAILABLE_PLATFORMS = ['ps4', 'xboxone', 'switch', 'pc', 'wii-u', '3ds', 'vita', 'ios']
+PARSER_DEFAULT_PLATFORM = 'switch'
+PARSER_DEFAULT_PARSING_URL = 'https://www.metacritic.com/browse/games/release-date/available/{platform}/metascore?view=condensed'
+PARSER_AVAILABLE_PLATFORMS = ['ps4', 'xboxone', 'switch', 'pc', 'wii-u', '3ds', 'vita', 'ios']

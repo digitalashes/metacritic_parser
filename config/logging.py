@@ -12,14 +12,16 @@ LOGGING = {
     'formatters': {
         'verbose': {
             '()': 'django.utils.log.ServerFormatter',
-            'format': '%(levelname)s %(asctime)s %(name)s %(filename)s %(funcName)s %(lineno)d \n%(message)s\n'
+            'format': '%(levelname)s %(asctime)s %(name)s '
+                      '%(filename)s %(funcName)s %(lineno)d \n%(message)s\n'
         },
         'sqlformatter': {
             '()': 'sqlformatter.SqlFormatter',
             'format': '%(levelname)s %(message)s',
         },
         'rich_formatter': {
-            'format': '\n%(levelname)s %(asctime)s %(name)s %(filename)s %(funcName)s %(lineno)d \n%(message)s',
+            'format': '\n%(levelname)s %(asctime)s %(name)s '
+                      '%(filename)s %(funcName)s %(lineno)d \n%(message)s',
             'datefmt': '%Y-%m-%d %H:%M:%S',
         }
     },

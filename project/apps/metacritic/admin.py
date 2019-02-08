@@ -27,7 +27,9 @@ class GameAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         additional_urls = [
-            path('parse', self.admin_site.admin_view(self.parse_conf), name='metacritic_game_parse'),
+            path('parse',
+                 self.admin_site.admin_view(self.parse_conf),
+                 name='metacritic_game_parse'),
         ]
         return urls + additional_urls
 

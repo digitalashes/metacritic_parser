@@ -27,7 +27,7 @@ class Command(BaseCommand):
             '-u',
             '--url',
             type=str,
-            default=settings.DEFAULT_PARSING_URL.format(platform=settings.DEFAULT_PLATFORM),
+            default=settings.PARSER_DEFAULT_PARSING_URL.format(platform=settings.PARSER_DEFAULT_PLATFORM),
             help=_('Url for parsing.')
         )
 
@@ -45,7 +45,7 @@ class Command(BaseCommand):
         assert parse_result.netloc == 'www.metacritic.com', 'Incorrect site hostname'
         try:
             platform = parse_result.path.split('/')[5].lower()
-            assert platform in settings.AVAILABLE_PLATFORMS, 'Incorrect platform'
+            assert platform in settings.PARSER_AVAILABLE_PLATFORMS, 'Incorrect platform'
         except (IndexError, AttributeError):
             raise AssertionError('Incorrect platform')
         else:
@@ -59,7 +59,7 @@ class Command(BaseCommand):
 
     def fetch(self, session: requests.Session, url: str) -> None:
         self.stdout.write(f'Fetching games info from url - {url}')
-        response = session.get(url, headers=settings.DEFAULTS_HEADERS)
+        response = session.get(url, headers=settings.PARSER_DEFAULTS_HEADERS)
         if response.status_code != 200:
             self.stderr.write(f'Bad url - {url}\n'
                               f'Status code is {response.status_code}')
@@ -74,7 +74,9 @@ class Command(BaseCommand):
         products = body.find_class('product game_product')
         self.stdout.write(f'Found {len(products)} products(s).')
         for product in products:
-            title = next(product.find_class('basic_stat product_title')[0].iterlinks())[0].text.strip()
+            title = next(
+                product.find_class('basic_stat product_title')[0].iterlinks()
+            )[0].text.strip()
             score = product.find_class('metascore_w')[0].text
             self.data.append({'title': title, 'score': score})
         try:
@@ -84,7 +86,7 @@ class Command(BaseCommand):
             next_url = urlunparse((parse_url.scheme, parse_url.netloc, path, '', '', ''))
             self.stdout.write(f'Got next url value. It is - {next_url}')
             return next_url
-        except Exception as e:
+        except StopIteration:
             self.stdout.write('Looks like next url doesn\'t exists.\n'
                               'Seems it\'s a last page.\n\n')
             return None
