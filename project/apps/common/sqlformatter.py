@@ -20,7 +20,7 @@ class SqlFormatter(ServerFormatter):
         except AttributeError:
             return super(SqlFormatter, self).format(record)
 
-        sql = sqlparse.format(sql, reindent=True, keyword_case='upper')
+        sql = sqlparse.format(sql, keyword_case='lower')
         bg_color = 41 if duration > TIME_CRIT else 43 if duration > TIME_WARN else 42
 
         return TIME_FORMAT.format(bgcolor=bg_color,
