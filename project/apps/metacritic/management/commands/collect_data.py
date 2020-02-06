@@ -14,6 +14,8 @@ from django.utils.translation import ugettext_lazy as _
 from metacritic.models import Game
 from metacritic.models import Platform
 
+DEFAULT_URL = settings.PARSER_DEFAULT_PARSING_URL.format(platform=settings.PARSER_DEFAULT_PLATFORM)
+
 
 class Command(BaseCommand):
     help = "Collect data about games"
@@ -27,19 +29,22 @@ class Command(BaseCommand):
             '-u',
             '--url',
             type=str,
-            default=settings.PARSER_DEFAULT_PARSING_URL.format(platform=settings.PARSER_DEFAULT_PLATFORM),
+            default=DEFAULT_URL,
             help=_('Url for parsing.')
         )
 
     def handle(self, *args: Tuple[Any], **options: Dict[str, Any]) -> None:
-        self.check_url(options['url'])
+        self.check_url(options['url'] or DEFAULT_URL)
+
         with requests.Session() as session:
             self.fetch(session, self.url)
+
         if self.data:
             self.save()
 
     def check_url(self, url: str) -> None:
         self.stdout.write(f'\nGot {url} url\nTrying to check it.\n\n')
+
         parse_result = urlparse(url)
         assert parse_result.scheme == 'https', 'Incorrect scheme'
         assert parse_result.netloc == 'www.metacritic.com', 'Incorrect site hostname'
@@ -49,6 +54,7 @@ class Command(BaseCommand):
         except (IndexError, AttributeError):
             raise AssertionError('Incorrect platform')
         else:
+            platform, *__ = Platform.objects.get_or_create(name=platform)
             self.platform = platform
             self.stdout.write(f'Found platform. Platform name is {platform}')
         self.stdout.write('Looks like passed url is fine.\n\n')
@@ -64,11 +70,11 @@ class Command(BaseCommand):
             self.stderr.write(f'Bad url - {url}\n'
                               f'Status code is {response.status_code}')
             return
-        next_page = self.__parse(response.content)
+        next_page = self._parse(response.content)
         if next_page:
             self.fetch(session, next_page)
 
-    def __parse(self, html) -> Optional[str]:
+    def _parse(self, html) -> Optional[str]:
         self.stdout.write('Parsing html.')
         body = lxmlhtml.fromstring(html)
         products = body.find_class('product game_product')
@@ -93,9 +99,34 @@ class Command(BaseCommand):
 
     def save(self) -> None:
         self.stdout.write('Saving data...')
-        platform, *__ = Platform.objects.get_or_create(name=self.platform)
+
+        games_qs = Game.objects.filter(platform=self.platform).values('title', 'id', 'score')
+        games = {i['title']: {'id': i['id'], 'score': i['score']} for i in games_qs}
+        game_for_create = []
+        game_for_update = []
+
         for record in self.data:
-            Game.objects.update_or_create(platform=platform, title=record['title'], defaults={
-                'score': record['score']
-            })
+            title = record['title']
+            try:
+                score = int(record['score'])
+            except ValueError:
+                self.stderr.write('Can\'t convert score %s for game %game', record['score'], record['title'])
+                continue
+            game = Game(platform=self.platform,
+                        title=title,
+                        score=score)
+
+            game_obj = games.get(title)
+            if not game_obj:
+                game_for_create.append(game)
+            elif game_obj['score'] != score:
+                game.id = game_obj['id']
+                game.score = game_obj['score']
+                game_for_update.append(game)
+
+        if game_for_create:
+            Game.objects.bulk_create(game_for_create)
+        if game_for_update:
+            Game.objects.bulk_update(game_for_update, ['score'])
+
         self.stdout.write('Data has been saved.')
