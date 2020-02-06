@@ -397,7 +397,7 @@ if env.bool('DJANGO_DEBUG_SQL_COLOR'):
 ##############################################################################
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 250,
 }
 
@@ -415,6 +415,6 @@ PARSER_DEFAULTS_HEADERS = {
     'user-agent':
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36',
 }
-PARSER_DEFAULT_PLATFORM = 'switch'
+PARSER_DEFAULT_PLATFORM = 'ps4'
 PARSER_DEFAULT_PARSING_URL = 'https://www.metacritic.com/browse/games/release-date/available/{platform}/metascore?view=condensed'
 PARSER_AVAILABLE_PLATFORMS = ['ps4', 'xboxone', 'switch', 'pc', 'wii-u', '3ds', 'vita', 'ios']
