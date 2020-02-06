@@ -10,7 +10,7 @@ ADD config /opt/services/djangoapp/src/config
 ADD project /opt/services/djangoapp/src/project
 ADD manage.py /opt/services/djangoapp/src
 ADD Pipfile /opt/services/djangoapp/src
-ADD Pipfile.lock /opt/services/djangoapp/src
 
-RUN pip install -U pip wheel setuptools pipenv && \
-    pipenv install --system
+RUN pip install -U pip wheel setuptools pipenv
+RUN pipenv install --python /usr/local/bin/python3 --skip-lock
+
