@@ -23,27 +23,27 @@ class ParserViewForm(FormView):  # pylint: disable=R0901
     def form_valid(self, form):
         try:
             call_command('collect_data', url=form.cleaned_data['url'])
-        except Exception:  # pylint: disable=W0703
-            messages.add_message(self.request, messages.ERROR, 'Something went wrong.')
+        except Exception as e:  # pylint: disable=W0703
+            messages.add_message(self.request, messages.ERROR, f'Something went wrong. {e}')
             return super().form_invalid(form)
         messages.add_message(self.request, messages.INFO, 'Data has been fetched successfully.')
         return super().form_valid(form)
 
 
 class GameListApiView(ListAPIView):
-    filter_backends = (OrderingFilter, SearchFilter)
-    ordering = ('title', 'score')
+    filter_backends = (
+        OrderingFilter,
+        SearchFilter,
+    )
+    ordering_fields = ('title', 'score')
+    ordering = ('-score',)
     queryset = Game.objects.select_related(
         'platform'
+    ).only(
+        'id', 'title', 'score', 'platform'
     )
     search_fields = ('title',)
     serializer_class = GameSerializer
-
-    def get_queryset(self):
-        platform = get_object_or_404(Platform.objects, name=settings.PARSER_DEFAULT_PLATFORM)
-        return super().get_queryset().filter(
-            platform=platform
-        )
 
 
 class GameRetrieveApiView(RetrieveAPIView):
