@@ -2,13 +2,11 @@
 
 Local requirements:
 
-    pip install -r requirements/local.txt
-
-Production requirements:
-
-    pip install -r requirements/production.txt
+    pipenv install
 
 ## 2. Django Management commands
 
-* ``./manage.py migrate``
-* ``./manage.py createsuperuser``
+* ``pipenv run ./manage.py migrate``
+* ``pipenv run ./manage.py createsuperuser``
+* ``pipenv run ./manage.py collect_data``
+* ``pipenv run ./manage.py runserver``
